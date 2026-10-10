@@ -1,15 +1,21 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-const NotFound = () => {
+interface NotFoundPageProps {
+  message?: string;
+}
+
+const NotFoundPage: React.FC<NotFoundPageProps> = ({ message = "Извините, запрошенная страница не существует." }) => {
   return (
-    <div style={{ textAlign: 'center', marginTop: '80px' }}>
+    <div className="not-found-page" style={{ textAlign: 'center', padding: '2rem' }}>
       <h1>404</h1>
       <h2>Страница не найдена</h2>
-      <p>Извините, запрошенная страница не существует.</p>
-      <Link to="/" style={{ display: 'inline-block', marginTop: '20px', padding: '10px 20px', background: '#3498db', color: 'white', textDecoration: 'none' }}>
+      <p>{message}</p>
+      <Link to="/" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
         Вернуться на главную
       </Link>
     </div>
   );
 };
-export default NotFound;
+
+export default NotFoundPage;

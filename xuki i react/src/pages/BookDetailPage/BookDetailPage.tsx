@@ -1,16 +1,33 @@
-import { useParams } from 'react-router-dom';
-import { mockBooks } from '../../mocks/books';
-import BookDetail from '../../components/books/BookDetail/BookDetail';
-import NotFound from '../NotFound/NotFound'; 
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import NotFoundPage from '../NotFoundPage/NotFoundPage';
 
-const BookDetailPage = () => {
-  const { id } = useParams();
+const mockBooks = [
+  { id: '1', title: 'Преступление и наказание', author: 'Ф. Достоевский', desc: 'Классический роман.' },
+  { id: '2', title: '1984', author: 'Дж. Оруэлл', desc: 'Роман-антиутопия.' }
+];
+
+const BookDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); 
+  const navigate = useNavigate();
+
+  // Поиск книги по ID
   const book = mockBooks.find(b => b.id === id);
 
   if (!book) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}><h1>Книга не найдена</h1><p>Запрошенная книга не существует.</p></div>;
+    return <NotFoundPage message={`Книга с ID "${id}" не найдена в нашей базе данных.`} />;
   }
 
-  return <BookDetail book={book} />;
+  return (
+    <div className="book-detail">
+      <button onClick={() => navigate(-1)} style={{ marginBottom: '1rem' }}>
+        &larr; Назад
+      </button>
+      <h1>{book.title}</h1>
+      <h3>Автор: {book.author}</h3>
+      <p>{book.desc}</p>
+    </div>
+  );
 };
+
 export default BookDetailPage;
