@@ -1,15 +1,21 @@
+import { IBook } from '../../../types/book.types';
 import BookCover from '../BookCover/BookCover';
 import BookInfo from '../BookInfo/BookInfo';
 import BookReviews from '../BookReviews/BookReviews';
-import { IBook } from '../../../types/book.types';
 
-interface BookDetailProps { book: IBook; }
+interface BookDetailProps {
+  book: IBook;
+}
 
-const BookDetail = ({ book }: BookDetailProps) => (
-  <div className="book-detail">
-    <BookCover cover={book.cover} />
-    <BookInfo title={book.title} author={book.author} year={book.year} />
-    <BookReviews reviews={book.reviews} />
-  </div>
-);
+const BookDetail = ({ book }: BookDetailProps) => {
+  return (
+    <div className="book-detail" style={{ display: 'flex', gap: '30px' }}>
+      <BookCover cover={book.cover} />
+      <div>
+        <BookInfo title={book.title} author={book.author} year={book.year} genre={book.genre} description={book.description} />
+        <BookReviews reviews={book.reviews} />
+      </div>
+    </div>
+  );
+};
 export default BookDetail;

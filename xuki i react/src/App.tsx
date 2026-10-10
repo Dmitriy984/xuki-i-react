@@ -11,10 +11,14 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<BooksPage />} />
+        
+       
         <Route path="books" element={<BooksPage />} />
         <Route path="books/:id" element={<BookDetailPage />} />
         <Route path="readers" element={<ReadersPage />} />
         <Route path="reader/:id" element={<ReaderProfilePage />} />
+        
+   
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
