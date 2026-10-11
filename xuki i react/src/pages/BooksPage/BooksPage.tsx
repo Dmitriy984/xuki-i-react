@@ -1,38 +1,47 @@
 import { useState } from 'react';
-import BookList from '../../components/books/BookList/BookList';
-import AddBookModal from '../../components/books/AddBookModal/AddBookModal';
-import { IBook } from '../../types/book.types';
-import { mockBooks } from '../../mocks/books';
-import styles from './BooksPage.module.css';
+import Layout from '../components/common/Layout';
+import AddBookModal from '../components/books/AddBookModal/AddBookModal';
+
+interface Book {
+  title: string;
+  author: string;
+  year: string;
+}
 
 const BooksPage = () => {
-  const [books, setBooks] = useState<IBook[]>([...mockBooks]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [books, setBooks] = useState<Book[]>([]); 
 
-  const handleAddBook = (newBook: IBook) => {
-    setBooks((prev) => [...prev, newBook]);
+  const handleSaveBook = (book: Book) => {
+ 
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
-        <h1>Каталог книг</h1>
+    <Layout>
+      <div className="page-header">
+        <h1 className="page-title">Каталог книг</h1>
         <button
-          className={styles.addButton}
+          className="btn btn-primary"
           onClick={() => setIsModalOpen(true)}
         >
-          + Добавить книгу
+          Добавить книгу
         </button>
       </div>
 
-      <BookList books={books} />
+      <div className="books-list">
+        {books.map((book, index) => (
+          <div key={index} className="book-item">
+            <strong>{book.title}</strong> – {book.author} ({book.year})
+          </div>
+        ))}
+      </div>
 
       <AddBookModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAddBook={handleAddBook}
+        onSave={handleSaveBook}
       />
-    </div>
+    </Layout>
   );
 };
 

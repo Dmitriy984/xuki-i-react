@@ -1,173 +1,100 @@
 import { useState } from 'react';
-import { IBook } from '../../../types/book.types';
-import styles from './AddBookModal.module.css';
+import './AddBookModal.css';
 
 interface AddBookModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddBook: (book: IBook) => void;
+  onSave?: (book: { title: string; author: string; year: string }) => void; // для второй ветки
 }
 
-const initialFormState = {
-  title: '',
-  author: '',
-  year: '',
-  genre: '',
-  description: '',
-};
-
-const AddBookModal = ({ isOpen, onClose, onAddBook }: AddBookModalProps) => {
-  const [form, setForm] = useState(initialFormState);
+const AddBookModal = ({ isOpen, onClose, onSave }: AddBookModalProps) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [year, setYear] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-
-    if (!form.title.trim()) {
-      newErrors.title = 'Название обязательно';
-    }
-    if (!form.author.trim()) {
-      newErrors.author = 'Автор обязателен';
-    }
-    if (form.year && (isNaN(Number(form.year)) || Number(form.year) < 1000 || Number(form.year) > 2030)) {
-      newErrors.year = 'Год должен быть числом от 1000 до 2030';
-    }
-
+    if (!title.trim()) newErrors.title = 'Название обязательно';
+    if (!author.trim()) newErrors.author = 'Автор обязателен';
+    if (year && !/^\d{4}$/.test(year)) newErrors.year = 'Год должен быть 4-значным числом';
     return newErrors;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
-    const newBook: IBook = {
-      id: String(Date.now()),
-      title: form.title.trim(),
-      author: form.author.trim(),
-      year: form.year ? Number(form.year) : 0,
-      genre: form.genre.trim(),
-      description: form.description.trim(),
-      cover: '/covers/default.jpg',
-      reviews: [],
-    };
-
-    onAddBook(newBook);
-    resetForm();
-    onClose();
+    console.log({ title, author, year });
+    if (onSave) {
+      onSave({ title, author, year });
+    }
+    handleClose();
   };
 
-  const resetForm = () => {
-    setForm(initialFormState);
+  const handleClose = () => {
+    setTitle('');
+    setAuthor('');
+    setYear('');
     setErrors({});
-  };
-
-  const handleOverlayClick = () => {
-    resetForm();
-    onClose();
-  };
-
-  const handleCancel = () => {
-    resetForm();
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2>Добавить книгу</h2>
-          <button className={styles.closeButton} onClick={handleCancel}>
-            &times;
-          </button>
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Добавление книги</h2>
+          <button className="modal-close" onClick={handleClose}>×</button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
+          <div className="form-group">
             <label htmlFor="title">Название *</label>
             <input
-              type="text"
               id="title"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              className={errors.title ? styles.errorInput : ''}
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={errors.title ? 'error' : ''}
             />
-            {errors.title && <span className={styles.errorText}>{errors.title}</span>}
+            {errors.title && <span className="error-text">{errors.title}</span>}
           </div>
 
-          <div className={styles.formGroup}>
+          <div className="form-group">
             <label htmlFor="author">Автор *</label>
             <input
-              type="text"
               id="author"
-              name="author"
-              value={form.author}
-              onChange={handleChange}
-              className={errors.author ? styles.errorInput : ''}
+              type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              className={errors.author ? 'error' : ''}
             />
-            {errors.author && <span className={styles.errorText}>{errors.author}</span>}
+            {errors.author && <span className="error-text">{errors.author}</span>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="year">Год</label>
+          <div className="form-group">
+            <label htmlFor="year">Год издания</label>
             <input
-              type="text"
               id="year"
-              name="year"
-              value={form.year}
-              onChange={handleChange}
-              placeholder="Например, 2023"
-              className={errors.year ? styles.errorInput : ''}
-            />
-            {errors.year && <span className={styles.errorText}>{errors.year}</span>}
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="genre">Жанр</label>
-            <input
               type="text"
-              id="genre"
-              name="genre"
-              value={form.genre}
-              onChange={handleChange}
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              className={errors.year ? 'error' : ''}
             />
+            {errors.year && <span className="error-text">{errors.year}</span>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="description">Описание</label>
-            <textarea
-              id="description"
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={4}
-            />
-          </div>
-
-          <div className={styles.modalFooter}>
-            <button type="button" className={styles.btnSecondary} onClick={handleCancel}>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-outline" onClick={handleClose}>
               Отмена
             </button>
-            <button type="submit" className={styles.btnPrimary}>
+            <button type="submit" className="btn btn-primary">
               Добавить книгу
             </button>
           </div>
